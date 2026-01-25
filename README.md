@@ -4,7 +4,7 @@
 
 Source: https://mesonbuild.com
 
-After cloning this project, please execute these commands at the root of the project (directory `dpa_project`).
+After cloning this project, please execute these commands at the root of the project (directory `dynamic_program_analyser`).
 
 To setup the build directory:
 ```
