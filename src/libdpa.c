@@ -4,7 +4,7 @@
 #include <sys/wait.h> // waitpid
 #include <unistd.h> // fork, access
 
-int launch(char *path, bool kill_on_exit, process_t *proc)
+int launch(char *path, bool kill_on_exit, process_t **proc)
 {
     // verif that program exists
     if (access(path, F_OK) != 0)
@@ -37,10 +37,10 @@ int launch(char *path, bool kill_on_exit, process_t *proc)
         waitpid(pid, NULL, 0);
 
         // init process_t object
-        proc = malloc(sizeof(process_t));
-        proc->pid = pid;
-        proc->status = STOPPED;
-        proc->kill_on_exit = kill_on_exit;
+        (*proc) = malloc(sizeof(process_t));
+        (*proc)->pid = pid;
+        (*proc)->status = STOPPED;
+        (*proc)->kill_on_exit = kill_on_exit;
     }
 
     return EXIT_SUCCESS;

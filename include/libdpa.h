@@ -27,4 +27,4 @@ process_t;
  *  - waits for the child to stop
  *  - sets up the process_t struct
  */
-int launch(char *path, bool kill_on_exit, process_t *proc);
+int launch(char *path, bool kill_on_exit, process_t **proc);
