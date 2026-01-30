@@ -4,7 +4,7 @@
 #include <sys/wait.h> // waitpid
 #include <unistd.h> // fork, access
 
-int launch(const char *path, bool kill_on_exit, process_t *proc)
+int launch(char *path, bool kill_on_exit, process_t *proc)
 {
     // verif that program exists
     if (access(path, F_OK) != 0)
