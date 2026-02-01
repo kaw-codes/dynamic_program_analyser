@@ -20,7 +20,10 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
     }
     else if (pid == 0)
     { /* child */
-        ptrace(PTRACE_TRACEME, 0, 0, NULL);
+        if (ptrace(PTRACE_TRACEME) < 0)
+        {
+            return EXIT_FAILURE;
+        }
         
         // exec software from path
         char *my_args[2];
@@ -45,4 +48,29 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
 
     return EXIT_SUCCESS;
     
+}
+
+int attach(pid_t pid, bool kill_on_exit, process_t **proc)
+{
+    // check is pid exists
+    if (kill(pid, 0) != 0)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // attach 
+    if (ptrace(PTRACE_ATTACH, pid) < 0)
+    {
+        return EXIT_FAILURE;
+    }
+    waitpid(pid, NULL, 0);
+
+    // set struct proc
+    (*proc) = malloc(sizeof(process_t));
+    (*proc)->pid = pid;
+    (*proc)->status = STOPPED; // TODO make "wait_status" function
+    (*proc)->kill_on_exit = kill_on_exit;
+
+    // end
+    return EXIT_SUCCESS;
 }

@@ -28,3 +28,12 @@ process_t;
  *  - sets up the process_t struct
  */
 int launch(char *path, bool kill_on_exit, process_t **proc);
+
+/**
+ * attach to the software using an existing pid
+ */
+int attach(pid_t pid, bool kill_on_exit, process_t **proc);
+
+int resume(process_t *proc);
+
+int detach(process_t *proc);
