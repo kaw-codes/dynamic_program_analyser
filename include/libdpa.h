@@ -30,10 +30,18 @@ process_t;
 int launch(char *path, bool kill_on_exit, process_t **proc);
 
 /**
- * attach to the software using an existing pid
+ * to wait and edit status
+ */
+int wait_status(process_t *proc);
+
+/**
+ * to attach to the software using an existing pid
  */
 int attach(pid_t pid, bool kill_on_exit, process_t **proc);
 
+/**
+ * to resume the program from when it stopped
+ */
 int resume(process_t *proc);
 
 int detach(process_t *proc);

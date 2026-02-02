@@ -37,7 +37,7 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
     else 
     { /* parent */
         // wait for child to stop
-        waitpid(pid, NULL, 0);
+        waitpid(pid, NULL, 0); // TODO change with wait_status
 
         // init process_t object
         (*proc) = malloc(sizeof(process_t));
@@ -48,6 +48,38 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
 
     return EXIT_SUCCESS;
     
+}
+
+int wait_status(process_t *proc)
+{
+    // check
+    if (!proc)
+    {
+        EXIT_FAILURE;
+    }
+
+    // waitpid
+    int status;
+    waitpid(proc->pid, &status, 0);
+
+    // edit status
+    if (status < 0)
+    {
+        return EXIT_FAILURE;
+    }
+    else if (WIFSTOPPED(status))
+    {
+        proc->status = STOPPED;
+    }
+    else if (WIFSIGNALED(status) || WIFEXITED(status))
+    {
+        proc->status = TERMINATED;
+    }
+    else
+    {
+        proc->status = RUNNING;
+    }
+    return EXIT_SUCCESS;
 }
 
 int attach(pid_t pid, bool kill_on_exit, process_t **proc)
@@ -63,7 +95,7 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc)
     {
         return EXIT_FAILURE;
     }
-    waitpid(pid, NULL, 0);
+    waitpid(pid, NULL, 0); // TODO change with wait_status
 
     // set struct proc
     (*proc) = malloc(sizeof(process_t));
@@ -72,5 +104,22 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc)
     (*proc)->kill_on_exit = kill_on_exit;
 
     // end
+    return EXIT_SUCCESS;
+}
+
+int resume(process_t *proc)
+{
+    // check
+    if (!proc)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // resume
+    if (proc->status == STOPPED)
+    {
+        ptrace(PTRACE_CONT, proc->pid);
+        proc->status = RUNNING;
+    }
     return EXIT_SUCCESS;
 }
