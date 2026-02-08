@@ -36,14 +36,14 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
     }
     else 
     { /* parent */
-        // wait for child to stop
-        waitpid(pid, NULL, 0); // TODO change with wait_status
-
         // init process_t object
         (*proc) = malloc(sizeof(process_t));
         (*proc)->pid = pid;
         (*proc)->status = STOPPED;
         (*proc)->kill_on_exit = kill_on_exit;
+
+        // wait for child to stop
+        wait_status((*proc));
     }
 
     return EXIT_SUCCESS;
@@ -94,13 +94,12 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc)
     if (ptrace(PTRACE_ATTACH, pid) < 0)
     {
         return EXIT_FAILURE;
-    }
-    waitpid(pid, NULL, 0); // TODO change with wait_status
+    } 
+    wait_status((*proc));
 
     // set struct proc
     (*proc) = malloc(sizeof(process_t));
     (*proc)->pid = pid;
-    (*proc)->status = STOPPED; // TODO make "wait_status" function
     (*proc)->kill_on_exit = kill_on_exit;
 
     // end
