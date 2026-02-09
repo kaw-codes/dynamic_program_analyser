@@ -1,6 +1,9 @@
+#include "cli.h"
+#include "libdpa.h"
 #include <argp.h> // opt parsing
-#include <stdio.h> // printf
+#include <stdio.h> // printf, fgets
 #include <stdlib.h> // atoi
+#include <string.h> // strtok
 
 /* options parsing */
 
@@ -53,8 +56,32 @@ static struct argp argp = { options, parse_opt, args_doc, doc };
 
 void print_help_commands()
 {
-    printf("available commands:");
-    printf("  help, h\n");
+    printf("available commands:\n");
+    printf("  help,     h\n");
+    printf("  attach,   a,  pid\n");
+    printf("  continue, c\n");
+    printf("  detach,   d\n");
+    printf("  exit,     e\n");
+}
+
+int convert_str_into_id(char *cmd)
+{
+    if (strcmp(cmd, "help") == 0 || 
+        strcmp(cmd, "h") == 0)
+        return HELP;
+    if (strcmp(cmd, "attach") == 0 || 
+        strcmp(cmd, "a") == 0)
+        return ATTACH;
+    if (strcmp(cmd, "continue") == 0 || 
+        strcmp(cmd, "c") == 0)
+        return CONTINUE;
+    if (strcmp(cmd, "detach") == 0 || 
+        strcmp(cmd, "d") == 0)
+        return DETACH;
+    if (strcmp(cmd, "exit") == 0 || 
+        strcmp(cmd, "e") == 0)
+        return EXIT;
+    return ERROR;
 }
 
 int main(int argc, char **argv)
@@ -64,12 +91,133 @@ int main(int argc, char **argv)
     args.path = NULL;
     args.pid = -1;
     if (argc > 3)
+    {
         exit(EXIT_FAILURE);
+    }
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
     /* check args */
-    printf("pid:%d\n", args.pid);
+    printf("pid: %d\n", args.pid);
     printf("path: %s\n", args.path);
 
+    /* if args */
+    process_t *proc = NULL;
+    if (args.pid != -1) // pid mode
+    {
+        if (attach(args.pid, true, &proc) != 0)
+        {
+            printf("error: issue with attach");
+            return EXIT_FAILURE;
+        }
+        if (!proc)
+        {
+            printf("error: proc = NULL");
+            return EXIT_FAILURE;
+        }
+    }
+    else if (args.path) // software path mode
+    {
+        if (launch(args.path, true, &proc) != 0)
+        {
+            printf("error: issue with launch");
+            return EXIT_FAILURE;
+        }
+        if (!proc)
+        {
+            printf("error: proc = NULL");
+            return EXIT_FAILURE;
+        }
+    }
+
+    /* routine */
+    char input[128];
+    while(1)
+    {
+        /* get cmd + args */
+        printf("dpa> ");
+        fgets(input, sizeof(input), stdin);
+        input[strcspn(input, "\n")] = 0; // to remove '\n'
+        char *cmd = strtok(input, " ");
+        char *arg1 = strtok(NULL, " ");
+        if (!cmd)
+        {
+            printf("error: enter command");
+            print_help_commands();
+        }
+
+        /* exec command */
+        int cmd_id = convert_str_into_id(cmd);
+        switch(cmd_id)
+        {
+        case HELP:
+            print_help_commands();
+            break;
+        case ATTACH:
+            if (proc)
+            {
+                printf("detaching...\n");
+                detach(proc);
+                free(proc);
+                proc = NULL;
+            }
+            printf("attaching...\n");
+            pid_t pid = atoi(arg1); // FIXME pb if arg1 empty
+            if (pid <= 0)
+            {
+                printf("error: wrong pid\n");
+                return EXIT_FAILURE;
+            }
+            printf("%d\n", pid);
+            if (attach(pid, true, &proc) != 0)
+            {
+                printf("error: issue with attach\n");
+                return EXIT_FAILURE;
+            }
+            break;
+        case CONTINUE:
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            printf("continuing...\n");
+            if (resume(proc) != 0)
+            {
+                printf("error: issue with resume\n");
+                return EXIT_FAILURE;
+            }
+            break;
+        case DETACH:
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            printf("detaching...\n");
+            if (detach(proc) != 0)
+            {
+                printf("error: issue with detach\n");
+                return EXIT_FAILURE;
+            }
+            break;
+        case EXIT:
+            if (proc)
+            {
+                printf("detaching...\n");
+                detach(proc);
+                free(proc);
+                proc = NULL;
+            }
+            printf("exiting...\n");
+            goto _end;
+            break;
+        case ERROR:
+            // FIXME pb if cmd empty
+            printf("error: wrong command\n");
+            break;
+        }
+    }
+
+_end:
     return 0;
 }
