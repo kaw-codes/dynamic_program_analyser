@@ -44,4 +44,7 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc);
  */
 int resume(process_t *proc);
 
+/**
+ * detach from the child proc and either kill or resume it
+ */
 int detach(process_t *proc);

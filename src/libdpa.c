@@ -1,5 +1,6 @@
 #include "libdpa.h"
 #include <stdlib.h> // malloc
+#include <signal.h> // SIGTERM
 #include <sys/ptrace.h> // ptrace
 #include <sys/wait.h> // waitpid
 #include <unistd.h> // fork, access
@@ -120,5 +121,33 @@ int resume(process_t *proc)
         ptrace(PTRACE_CONT, proc->pid);
         proc->status = RUNNING;
     }
+    return EXIT_SUCCESS;
+}
+
+int detach(process_t *proc)
+{
+    // check
+    if (!proc)
+    {
+        return EXIT_FAILURE;
+    }
+    if (proc->status != TERMINATED || proc->status != STOPPED)
+    {
+        kill(proc->pid, SIGSTOP);
+    }
+
+    // detach
+    ptrace(PTRACE_DETACH, proc->pid);
+
+    // kill or resume
+    if (proc->kill_on_exit)
+    {
+        kill(proc->pid, SIGTERM);
+    }
+    else
+    {
+        kill(proc->pid, SIGCONT);
+    }
+
     return EXIT_SUCCESS;
 }
