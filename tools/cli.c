@@ -141,8 +141,9 @@ int main(int argc, char **argv)
         char *arg1 = strtok(NULL, " ");
         if (!cmd)
         {
-            printf("error: enter command");
+            printf("error: enter command\n");
             print_help_commands();
+            continue;
         }
 
         /* exec command */
@@ -212,7 +213,6 @@ int main(int argc, char **argv)
             goto _end;
             break;
         case ERROR:
-            // FIXME pb if cmd empty
             printf("error: wrong command\n");
             break;
         }
