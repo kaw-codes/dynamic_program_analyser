@@ -154,27 +154,37 @@ int main(int argc, char **argv)
             print_help_commands();
             break;
         case ATTACH:
-            if (proc)
+            if (!arg1)
             {
-                printf("detaching...\n");
-                detach(proc);
-                free(proc);
-                proc = NULL;
+                printf("error: 'attach' cmd requires 1 arg\n");
+                print_help_commands();
+                continue;
             }
-            printf("attaching...\n");
-            pid_t pid = atoi(arg1); // FIXME pb if arg1 empty
-            if (pid <= 0)
+            else 
             {
-                printf("error: wrong pid\n");
-                return EXIT_FAILURE;
+                if (proc)
+                {
+                    printf("detaching...\n");
+                    detach(proc);
+                    free(proc);
+                    proc = NULL;
+                }
+                printf("attaching...\n");
+                pid_t pid = atoi(arg1);
+                printf("%d\n", pid);
+                if (pid <= 0)
+                {
+                    printf("error: wrong pid\n");
+                    continue;
+                }
+                printf("%d\n", pid);
+                if (attach(pid, true, &proc) != 0)
+                {
+                    printf("error: issue with attach\n");
+                    continue;
+                }
+                break;
             }
-            printf("%d\n", pid);
-            if (attach(pid, true, &proc) != 0)
-            {
-                printf("error: issue with attach\n");
-                return EXIT_FAILURE;
-            }
-            break;
         case CONTINUE:
             if (!proc)
             {
@@ -205,7 +215,7 @@ int main(int argc, char **argv)
             if (proc)
             {
                 printf("detaching...\n");
-                detach(proc);
+                detach(proc); // TODO ctrl on detach
                 free(proc);
                 proc = NULL;
             }
