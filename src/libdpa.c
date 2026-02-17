@@ -1,4 +1,5 @@
 #include "libdpa.h"
+#include <stdio.h> // perror
 #include <stdlib.h> // malloc
 #include <signal.h> // SIGTERM
 #include <sys/ptrace.h> // ptrace
@@ -38,7 +39,7 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
     else 
     { /* parent */
         // init process_t object
-        (*proc) = malloc(sizeof(process_t));
+        (*proc) = malloc(sizeof(process_t)); // TODO ctrl malloc
         (*proc)->pid = pid;
         (*proc)->status = STOPPED;
         (*proc)->kill_on_exit = kill_on_exit;
@@ -94,12 +95,13 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc)
     // attach 
     if (ptrace(PTRACE_ATTACH, pid) < 0)
     {
+        perror("ptrace");
         return EXIT_FAILURE;
     } 
     wait_status((*proc));
 
     // set struct proc
-    (*proc) = malloc(sizeof(process_t));
+    (*proc) = malloc(sizeof(process_t)); // TODO ctrl malloc
     (*proc)->pid = pid;
     (*proc)->kill_on_exit = kill_on_exit;
 

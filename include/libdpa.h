@@ -36,6 +36,12 @@ int wait_status(process_t *proc);
 
 /**
  * to attach to the software using an existing pid
+ * 
+ * if you obtain "operation not permitted", then run:
+ * cat /proc/sys/kernel/yama/ptrace_scope
+ * - 0 : authorized
+ * - 1 : only on children
+ * - 2 : quite never allowed
  */
 int attach(pid_t pid, bool kill_on_exit, process_t **proc);
 
