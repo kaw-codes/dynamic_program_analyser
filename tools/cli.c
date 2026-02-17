@@ -139,33 +139,35 @@ int main(int argc, char **argv)
         input[strcspn(input, "\n")] = 0; // to remove '\n'
         char *cmd = strtok(input, " ");
         char *arg1 = strtok(NULL, " ");
-        if (!cmd)
-        {
-            printf("error: enter command\n");
-            print_help_commands();
-            continue;
-        }
+        int cmd_id = -1;
+        if (cmd) cmd_id = convert_str_into_id(cmd);
 
         /* exec command */
-        int cmd_id = convert_str_into_id(cmd);
         switch(cmd_id)
         {
+        /* help */
         case HELP:
             print_help_commands();
             break;
+
+        /* attach */
         case ATTACH:
             if (!arg1)
             {
                 printf("error: 'attach' cmd requires 1 arg\n");
                 print_help_commands();
-                continue;
+                break;
             }
-            else 
+            else
             {
                 if (proc)
                 {
                     printf("detaching...\n");
-                    detach(proc);
+                    if (detach(proc) != 0)
+                    {
+                        printf("error: issue with detach\n");
+                        return EXIT_FAILURE;
+                    }
                     free(proc);
                     proc = NULL;
                 }
@@ -175,16 +177,17 @@ int main(int argc, char **argv)
                 if (pid <= 0)
                 {
                     printf("error: wrong pid\n");
-                    continue;
+                    break;
                 }
-                printf("%d\n", pid);
                 if (attach(pid, true, &proc) != 0)
                 {
                     printf("error: issue with attach\n");
-                    continue;
+                    break;
                 }
                 break;
             }
+
+        /* continue */
         case CONTINUE:
             if (!proc)
             {
@@ -198,6 +201,8 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+
+        /* detach */
         case DETACH:
             if (!proc)
             {
@@ -211,17 +216,25 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+
+        /* exit */
         case EXIT:
             if (proc)
             {
                 printf("detaching...\n");
-                detach(proc); // TODO ctrl on detach
+                if (detach(proc) != 0)
+                {
+                    printf("error: issue with detach\n");
+                    return EXIT_FAILURE;
+                }
                 free(proc);
                 proc = NULL;
             }
             printf("exiting...\n");
             goto _end;
             break;
+        
+        /* error well */
         case ERROR:
             printf("error: wrong command\n");
             break;
