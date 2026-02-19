@@ -54,13 +54,14 @@ static struct argp argp = { options, parse_opt, args_doc, doc };
 
 /* main code */
 
-void print_help_commands()
+void print_cmd_help()
 {
     printf("available commands:\n");
     printf("  help,     h\n");
-    printf("  attach,   a,  pid\n");
+    printf("  attach,   a,  [pid]\n");
     printf("  continue, c\n");
     printf("  detach,   d\n");
+    printf("  regread,  rr, [reg]\n");
     printf("  exit,     e\n");
 }
 
@@ -81,6 +82,9 @@ int convert_str_into_id(char *cmd)
     if (strcmp(cmd, "exit") == 0 || 
         strcmp(cmd, "e") == 0)
         return EXIT;
+    if (strcmp(cmd, "regread") == 0 ||
+        strcmp(cmd, "rr") == 0)
+        return REG_READ;
     return ERROR;
 }
 
@@ -147,7 +151,7 @@ int main(int argc, char **argv)
         {
         /* help */
         case HELP:
-            print_help_commands();
+            print_cmd_help();
             break;
 
         /* attach */
@@ -155,7 +159,7 @@ int main(int argc, char **argv)
             if (!arg1)
             {
                 printf("error: 'attach' cmd requires 1 arg\n");
-                print_help_commands();
+                print_cmd_help();
                 break;
             }
             else
@@ -216,6 +220,29 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             }
             break;
+        
+        /* register_read */
+        case REG_READ:
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            if (!arg1)
+            {
+                printf("error: 1 argument is required\n");
+                print_cmd_help();
+                break;
+            }
+            printf("reading register...\n");
+            reg_t val_reg = 0;
+            if (register_read(proc, arg1, &val_reg) != 0)
+            {
+                printf("error: issue with register_read\n");
+                return EXIT_FAILURE;
+            }
+            printf("%s=%llx\n", arg1, val_reg);
+            break;
 
         /* exit */
         case EXIT:
@@ -237,10 +264,11 @@ int main(int argc, char **argv)
         /* error well */
         case ERROR:
             printf("error: wrong command\n");
+            print_cmd_help();
             break;
         }
     }
 
 _end:
-    return 0;
+    return EXIT_SUCCESS;
 }
