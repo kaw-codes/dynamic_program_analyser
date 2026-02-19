@@ -1,6 +1,6 @@
 #pragma once
 #include <sys/types.h>
-#include <sys/user.h>
+#include <sys/user.h> // struct user_regs_struct
 #include <stdbool.h>
 
 /* registers id */

@@ -1,7 +1,8 @@
 #include "libdpa.h"
+#include <signal.h> // SIGTERM
 #include <stdio.h> // perror
 #include <stdlib.h> // malloc
-#include <signal.h> // SIGTERM
+#include <string.h> // strcmp
 #include <sys/ptrace.h> // ptrace
 #include <sys/wait.h> // waitpid
 #include <unistd.h> // fork, access
@@ -197,7 +198,7 @@ int register_read(process_t *proc, const char *reg, reg_t *val_reg)
         return EXIT_FAILURE;
     }
 
-    // register_read
+    // read register
     int reg_id = convert_reg_into_id(reg);
     switch(reg_id)
     {
