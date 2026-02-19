@@ -153,3 +153,139 @@ int detach(process_t *proc)
 
     return EXIT_SUCCESS;
 }
+
+/**
+ * convert the register's name in paramater in an identifier
+ */
+static int convert_reg_into_id(const char *reg)
+{
+    if (strcmp(reg, "r15") == 0) return R15;
+    if (strcmp(reg, "r14") == 0) return R14;
+    if (strcmp(reg, "r13") == 0) return R13;
+    if (strcmp(reg, "r12") == 0) return R12;
+    if (strcmp(reg, "rbp") == 0) return RBP;
+    if (strcmp(reg, "rbx") == 0) return RBX;
+    if (strcmp(reg, "r11") == 0) return R11;
+    if (strcmp(reg, "r10") == 0) return R10;
+    if (strcmp(reg, "r9") == 0) return R9;
+    if (strcmp(reg, "r8") == 0) return R8;
+    if (strcmp(reg, "rax") == 0) return RAX;
+    if (strcmp(reg, "rcx") == 0) return RCX;
+    if (strcmp(reg, "rdx") == 0) return RDX;
+    if (strcmp(reg, "rsi") == 0) return RSI;
+    if (strcmp(reg, "rdi") == 0) return RDI;
+    if (strcmp(reg, "orig_rax") == 0) return ORIG_RAX;
+    if (strcmp(reg, "rip") == 0) return RIP;
+    if (strcmp(reg, "cs") == 0) return CS;
+    if (strcmp(reg, "eflags") == 0) return EFLAGS;
+    if (strcmp(reg, "rsp") == 0) return RSP;
+    if (strcmp(reg, "ss") == 0) return SS;
+    if (strcmp(reg, "fs_base") == 0) return FS_BASE;
+    if (strcmp(reg, "gs_base") == 0) return GS_BASE;
+    if (strcmp(reg, "ds") == 0) return DS;
+    if (strcmp(reg, "es") == 0) return ES;
+    if (strcmp(reg, "fs") == 0) return FS;
+    if (strcmp(reg, "gs") == 0) return GS;
+    return -1;
+}
+
+int register_read(process_t *proc, const char *reg, reg_t *val_reg)
+{
+    // check
+    if (!proc)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // register_read
+    int reg_id = convert_reg_into_id(reg);
+    switch(reg_id)
+    {
+    case R15:
+        (*val_reg) = proc->regs.r15;
+        return EXIT_SUCCESS;
+    case R14:
+        (*val_reg) = proc->regs.r14;
+        return EXIT_SUCCESS;
+    case R13:
+        (*val_reg) = proc->regs.r13;
+        return EXIT_SUCCESS;
+    case R12:
+        (*val_reg) = proc->regs.r12;
+        return EXIT_SUCCESS;
+    case RBP:
+        (*val_reg) = proc->regs.rbp;
+        return EXIT_SUCCESS;
+    case RBX:
+        (*val_reg) = proc->regs.rbx;
+        return EXIT_SUCCESS;
+    case R11:
+        (*val_reg) = proc->regs.r11;
+        return EXIT_SUCCESS;
+    case R10:
+        (*val_reg) = proc->regs.r10;
+        return EXIT_SUCCESS;
+    case R9:
+        (*val_reg) = proc->regs.r9;
+        return EXIT_SUCCESS;
+    case R8:
+        (*val_reg) = proc->regs.r8;
+        return EXIT_SUCCESS;
+    case RAX:
+        (*val_reg) = proc->regs.rax;
+        return EXIT_SUCCESS;
+    case RCX:
+        (*val_reg) = proc->regs.rcx;
+        return EXIT_SUCCESS;
+    case RDX:
+        (*val_reg) = proc->regs.rdx;
+        return EXIT_SUCCESS;
+    case RSI:
+        (*val_reg) = proc->regs.rsi;
+        return EXIT_SUCCESS;
+    case RDI:
+        (*val_reg) = proc->regs.rdi;
+        return EXIT_SUCCESS;
+    case ORIG_RAX:
+        (*val_reg) = proc->regs.orig_rax;
+        return EXIT_SUCCESS;
+    case RIP:
+        (*val_reg) = proc->regs.rip;
+        return EXIT_SUCCESS;
+    case CS:
+        (*val_reg) = proc->regs.cs;
+        return EXIT_SUCCESS;
+    case EFLAGS:
+        (*val_reg) = proc->regs.eflags;
+        return EXIT_SUCCESS;
+    case RSP:
+        (*val_reg) = proc->regs.rsp;
+        return EXIT_SUCCESS;
+    case SS:
+        (*val_reg) = proc->regs.ss;
+        return EXIT_SUCCESS;
+    case FS_BASE:
+        (*val_reg) = proc->regs.fs_base;
+        return EXIT_SUCCESS;
+    case GS_BASE:
+        (*val_reg) = proc->regs.gs_base;
+        return EXIT_SUCCESS;
+    case DS:
+        (*val_reg) = proc->regs.ds;
+        return EXIT_SUCCESS;
+    case ES:
+        (*val_reg) = proc->regs.es;
+        return EXIT_SUCCESS;
+    case FS:
+        (*val_reg) = proc->regs.fs;
+        return EXIT_SUCCESS;
+    case GS:
+        (*val_reg) = proc->regs.gs;
+        return EXIT_SUCCESS;
+    default:
+        return EXIT_FAILURE;
+    }
+
+    // end
+    return EXIT_FAILURE;
+}
