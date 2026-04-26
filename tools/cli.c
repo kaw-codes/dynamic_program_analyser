@@ -110,12 +110,12 @@ int main(int argc, char **argv)
     {
         if (attach(args.pid, true, &proc) != 0)
         {
-            printf("error: issue with attach");
+            printf("error: issue with attach\n");
             return EXIT_FAILURE;
         }
         if (!proc)
         {
-            printf("error: proc = NULL");
+            printf("error: proc = NULL\n");
             return EXIT_FAILURE;
         }
     }
@@ -123,12 +123,12 @@ int main(int argc, char **argv)
     {
         if (launch(args.path, true, &proc) != 0)
         {
-            printf("error: issue with launch");
+            printf("error: issue with launch\n");
             return EXIT_FAILURE;
         }
         if (!proc)
         {
-            printf("error: proc = NULL");
+            printf("error: proc = NULL\n");
             return EXIT_FAILURE;
         }
     }
@@ -198,11 +198,32 @@ int main(int argc, char **argv)
                 printf("error: no proc attached\n");
                 break;
             }
-            printf("continuing...\n");
-            if (resume(proc) != 0)
+            else 
             {
-                printf("error: issue with resume\n");
-                return EXIT_FAILURE;
+                if (proc->status == TERMINATED)
+                {
+                    printf("program is already terminated\n");
+                    break;
+                }
+                if (proc->status == STOPPED)
+                {
+                    printf("continuing...\n");
+                    if (resume(proc) != 0)
+                    {
+                        printf("error: issue with resume\n");
+                        return EXIT_FAILURE;
+                    }
+                }
+                printf("waiting for program to stop...\n");
+                /*
+                we made the choice to directly wait for the child 
+                to finish after resuming it.
+                */
+                wait_status(proc); 
+                if (proc->status == TERMINATED)
+                    printf("program terminated!\n");
+                else
+                    printf("program stopped\n");
             }
             break;
 
