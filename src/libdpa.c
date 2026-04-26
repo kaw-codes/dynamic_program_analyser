@@ -23,7 +23,7 @@ int launch(char *path, bool kill_on_exit, process_t **proc)
     }
     else if (pid == 0)
     { /* child */
-        if (ptrace(PTRACE_TRACEME) < 0)
+        if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0)
         {
             return EXIT_FAILURE;
         }
@@ -94,7 +94,7 @@ int attach(pid_t pid, bool kill_on_exit, process_t **proc)
     }
 
     // attach 
-    if (ptrace(PTRACE_ATTACH, pid) < 0)
+    if (ptrace(PTRACE_ATTACH, pid, NULL, NULL) < 0)
     {
         perror("ptrace");
         return EXIT_FAILURE;
@@ -121,9 +121,10 @@ int resume(process_t *proc)
     // resume
     if (proc->status == STOPPED)
     {
-        ptrace(PTRACE_CONT, proc->pid);
+        ptrace(PTRACE_CONT, proc->pid, NULL, NULL);
         proc->status = RUNNING;
     }
+    
     return EXIT_SUCCESS;
 }
 
@@ -140,7 +141,7 @@ int detach(process_t *proc)
     }
 
     // detach
-    ptrace(PTRACE_DETACH, proc->pid);
+    ptrace(PTRACE_DETACH, proc->pid, NULL, NULL);
 
     // kill or resume
     if (proc->kill_on_exit)
