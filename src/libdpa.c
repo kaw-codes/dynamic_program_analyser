@@ -291,3 +291,104 @@ int register_read(process_t *proc, const char *reg, reg_t *val_reg)
     // end
     return EXIT_FAILURE;
 }
+
+register_write(process_t *proc, const char *reg, reg_t new_val)
+{
+    // check
+    if (!proc)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // write register
+    int reg_id = convert_reg_into_id(reg);
+    switch(reg_id)
+    {
+    case R15:
+        proc->regs.r15 = new_val;
+        return EXIT_SUCCESS;
+    case R14:
+        proc->regs.r14 = new_val;
+        return EXIT_SUCCESS;
+    case R13:
+        proc->regs.r13 = new_val;
+        return EXIT_SUCCESS;
+    case R12:
+        proc->regs.r12 = new_val;
+        return EXIT_SUCCESS;
+    case RBP:
+        proc->regs.rbp = new_val;
+        return EXIT_SUCCESS;
+    case RBX:
+        proc->regs.rbx = new_val;
+        return EXIT_SUCCESS;
+    case R11:
+        proc->regs.r11 = new_val;
+        return EXIT_SUCCESS;
+    case R10:
+        proc->regs.r10 = new_val;
+        return EXIT_SUCCESS;
+    case R9:
+        proc->regs.r9 = new_val;
+        return EXIT_SUCCESS;
+    case R8:
+        proc->regs.r8 = new_val;
+        return EXIT_SUCCESS;
+    case RAX:
+        proc->regs.rax = new_val;
+        return EXIT_SUCCESS;
+    case RCX:
+        proc->regs.rcx = new_val;
+        return EXIT_SUCCESS;
+    case RDX:
+        proc->regs.rdx = new_val;
+        return EXIT_SUCCESS;
+    case RSI:
+        proc->regs.rsi = new_val;
+        return EXIT_SUCCESS;
+    case RDI:
+        proc->regs.rdi = new_val;
+        return EXIT_SUCCESS;
+    case ORIG_RAX:
+        proc->regs.orig_rax = new_val;
+        return EXIT_SUCCESS;
+    case RIP:
+        proc->regs.rip = new_val;
+        return EXIT_SUCCESS;
+    case CS:
+        proc->regs.cs = new_val;
+        return EXIT_SUCCESS;
+    case EFLAGS:
+        proc->regs.eflags = new_val;
+        return EXIT_SUCCESS;
+    case RSP:
+        proc->regs.rsp = new_val;
+        return EXIT_SUCCESS;
+    case SS:
+        proc->regs.ss = new_val;
+        return EXIT_SUCCESS;
+    case FS_BASE:
+        proc->regs.fs_base = new_val;
+        return EXIT_SUCCESS;
+    case GS_BASE:
+        proc->regs.gs_base = new_val;
+        return EXIT_SUCCESS;
+    case DS:
+        proc->regs.ds = new_val;
+        return EXIT_SUCCESS;
+    case ES:
+        proc->regs.es = new_val;
+        return EXIT_SUCCESS;
+    case FS:
+        proc->regs.fs = new_val;
+        return EXIT_SUCCESS;
+    case GS:
+        proc->regs.gs = new_val;
+        return EXIT_SUCCESS;
+    default:
+        return EXIT_FAILURE;
+    }
+
+    // end
+    return EXIT_SUCCESS;
+}
