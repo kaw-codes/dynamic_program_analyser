@@ -262,13 +262,14 @@ int main(int argc, char **argv)
                 break;
             }
             printf("reading register...\n");
+            char *reg_to_read = arg1;
             reg_t val_reg = 0;
             if (register_read(proc, arg1, &val_reg) != 0)
             {
                 printf("error: issue with register_read\n");
                 return EXIT_FAILURE;
             }
-            printf("%s=%llx\n", arg1, val_reg);
+            printf("%s=0x%llx\n", arg1, val_reg);
             break;
 
         /* exit */
