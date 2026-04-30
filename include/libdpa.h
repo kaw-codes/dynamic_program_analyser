@@ -92,3 +92,8 @@ int detach(process_t *proc);
  * gets reg's content of proc and put it in val_reg
  */
 int register_read(process_t *proc, const char *reg, reg_t *val_reg);
+
+/**
+ * to write "new_val" in the specified "reg"
+ */
+int register_write(process_t *proc, const char *reg, reg_t new_val);
