@@ -101,13 +101,16 @@ int main(int argc, char **argv)
     argp_parse(&argp, argc, argv, 0, 0, &args);
 
     /* check args */
+    printf("---------CHECKING-ARGUMENTS---------\n");
     printf("pid: %d\n", args.pid);
     printf("path: %s\n", args.path);
 
     /* if args */
+    printf("\n----------------DPA-----------------\n");
     process_t *proc = NULL;
     if (args.pid != -1) // pid mode
     {
+        printf("attaching to pid...\n");
         if (attach(args.pid, true, &proc) != 0)
         {
             printf("error: issue with attach\n");
@@ -118,9 +121,11 @@ int main(int argc, char **argv)
             printf("error: proc = NULL\n");
             return EXIT_FAILURE;
         }
+        printf("successful attachment\n");
     }
     else if (args.path) // software path mode
     {
+        printf("lauching software...\n");
         if (launch(args.path, true, &proc) != 0)
         {
             printf("error: issue with launch\n");
@@ -131,6 +136,7 @@ int main(int argc, char **argv)
             printf("error: proc = NULL\n");
             return EXIT_FAILURE;
         }
+        printf("successful launch\npid: %d\n", proc->pid);
     }
 
     /* routine */
