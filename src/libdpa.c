@@ -292,7 +292,7 @@ int register_read(process_t *proc, const char *reg, reg_t *val_reg)
     return EXIT_FAILURE;
 }
 
-register_write(process_t *proc, const char *reg, reg_t new_val)
+int register_write(process_t *proc, const char *reg, reg_t new_val)
 {
     // check
     if (!proc)
