@@ -305,6 +305,41 @@ int main(int argc, char **argv)
             printf("%s=0x%llx\n", arg1, new_val);
             break;
 
+        /* memory_read */
+        case MEM_READ:
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            if (!arg1 || !arg2)
+            {
+                printf("error: 2 arguments are required\n");
+                print_cmd_help();
+                break;
+            }
+            printf("reading memory...\n");
+            addr_t vaddr = strtoll(arg1, NULL, 0);
+            size_t size = atoi(arg2);
+            if (size > 0 || size < 64) // size limited to 64 bytes
+            {
+                unsigned char buffer[0];
+                if (memory_read(proc, vaddr, buffer, size) != 0)
+                {
+                    printf("error: issue with memory_read\n");
+                    return EXIT_FAILURE;
+                }
+                // print read bytes
+                printf("0x%lx: ", vaddr);
+                for (int i = 0; i < size; i++)
+                {
+                    printf("%x", buffer[i]);
+                }
+                printf("\n");
+            }
+            
+            break;
+
         /* exit */
         case EXIT:
             if (proc)
