@@ -63,6 +63,7 @@ void print_cmd_help()
     printf("  detach,   d\n");
     printf("  regread,  rr, [reg]\n");
     printf("  regwrite, rw, [reg]   [val]\n");
+    printf("  memread,  mr, [vaddr] [size]\n");
     printf("  exit,     e\n");
 }
 
@@ -88,6 +89,9 @@ int convert_str_into_id(char *cmd)
         return REG_READ;
     if (strcmp(cmd, "regwrite") == 0 ||
         strcmp(cmd, "rw") == 0)
+        return REG_WRITE;
+    if (strcmp(cmd, "memread") == 0 ||
+        strcmp(cmd, "mr") == 0)
         return REG_WRITE;
     return ERROR;
 }
