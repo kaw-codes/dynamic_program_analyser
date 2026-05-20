@@ -1,11 +1,12 @@
 #include "libdpa.h"
+#include <fcntl.h> // open, O_RDONLY
 #include <signal.h> // SIGTERM
 #include <stdio.h> // perror
 #include <stdlib.h> // malloc
 #include <string.h> // strcmp
 #include <sys/ptrace.h> // ptrace
 #include <sys/wait.h> // waitpid
-#include <unistd.h> // fork, access
+#include <unistd.h> // fork, access, pread
 
 int launch(char *path, bool kill_on_exit, process_t **proc)
 {
@@ -388,6 +389,29 @@ int register_write(process_t *proc, const char *reg, reg_t new_val)
     default:
         return EXIT_FAILURE;
     }
+
+    // end
+    return EXIT_SUCCESS;
+}
+
+int memory_read(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size)
+{
+    // checks
+    if (!proc || !buffer)
+    {
+        return EXIT_FAILURE;
+    }
+    if (size <= 0)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // reading
+    char path[32];
+    snprintf(path, sizeof(path), "/proc/%d/mem", proc->pid);
+    int fd = open(path, O_RDONLY);
+    pread(fd, buffer, size, (off_t)vaddr);
+    close(fd);
 
     // end
     return EXIT_SUCCESS;
