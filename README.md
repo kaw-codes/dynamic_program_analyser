@@ -21,3 +21,10 @@ To run the program:
 ```
 ./build/tools/dpa
 ```
+
+## testing
+
+To see allocated areas for tracee (useful for memory reading/writing):
+```
+cat /proc/[pid]/maps
+```
