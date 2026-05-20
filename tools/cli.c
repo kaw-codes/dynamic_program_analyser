@@ -269,7 +269,7 @@ int main(int argc, char **argv)
             printf("reading register...\n");
             char *reg_to_read = arg1;
             reg_t val_reg = 0;
-            if (register_read(proc, arg1, &val_reg) != 0)
+            if (register_read(proc, reg_to_read, &val_reg) != 0)
             {
                 printf("error: issue with register_read\n");
                 return EXIT_FAILURE;
