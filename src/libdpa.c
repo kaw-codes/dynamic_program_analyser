@@ -1,7 +1,7 @@
 #include "libdpa.h"
 #include <fcntl.h> // open, O_RDONLY
 #include <signal.h> // SIGTERM
-#include <stdio.h> // perror
+#include <stdio.h> // perror, snprintf
 #include <stdlib.h> // malloc
 #include <string.h> // strcmp
 #include <sys/ptrace.h> // ptrace
