@@ -333,7 +333,7 @@ int main(int argc, char **argv)
                 printf("0x%lx: ", vaddr);
                 for (int i = 0; i < size; i++)
                 {
-                    printf("%x", buffer[i]);
+                    printf("%x ", buffer[i]);
                 }
                 printf("\n");
             }
