@@ -92,7 +92,7 @@ int convert_str_into_id(char *cmd)
         return REG_WRITE;
     if (strcmp(cmd, "memread") == 0 ||
         strcmp(cmd, "mr") == 0)
-        return REG_WRITE;
+        return MEM_READ;
     return ERROR;
 }
 
