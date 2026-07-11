@@ -8,4 +8,5 @@
 #define REG_READ    6
 #define REG_WRITE   7
 #define MEM_READ    8
+#define MEM_WRITE   9
 #define ERROR       -1
