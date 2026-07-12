@@ -276,8 +276,10 @@ int main(int argc, char **argv)
                 break;
             }
             printf("reading register...\n");
+            // get args
             char *reg_to_read = arg1;
             reg_t val_reg = 0;
+            // function call
             if (register_read(proc, arg1, &val_reg) != 0)
             {
                 printf("error: issue with register_read\n");
@@ -300,8 +302,10 @@ int main(int argc, char **argv)
                 break;
             }
             printf("writing register...\n");
+            // get args
             char *reg_to_write = arg1;
             reg_t new_val = strtoll(arg2, NULL, 0);
+            // function call
             if (register_write(proc, reg_to_write, new_val) != 0)
             {
                 printf("error: issue with register_write\n");
@@ -324,11 +328,13 @@ int main(int argc, char **argv)
                 break;
             }
             printf("reading memory...\n");
+            // get args
             addr_t vaddr = strtoll(arg1, NULL, 0);
             size_t size = atoi(arg2);
             if (size > 0 && size < 64) // size limited to 64 bytes
             {
                 unsigned char buffer[0];
+                // function call
                 if (memory_read(proc, vaddr, buffer, size) != 0)
                 {
                     printf("error: issue with memory_read\n");
@@ -358,6 +364,7 @@ int main(int argc, char **argv)
                 break;
             }
             printf("writing memory...\n");
+            // get args
             addr_t vaddr = strtoll(arg1, NULL, 0);
             size_t size = atoi(arg2);
             unsigned long long data = strtoll(arg3, NULL, 0);
@@ -372,6 +379,7 @@ int main(int argc, char **argv)
                     buffer[i] = data & 0xff;
                     data >>= 8;
                 }
+                // function call
                 if (memory_write(proc, vaddr, buffer, size) != 0)
                 {
                     printf("error: issue with memory_write\n");
