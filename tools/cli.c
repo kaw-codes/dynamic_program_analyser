@@ -326,7 +326,7 @@ int main(int argc, char **argv)
             printf("reading memory...\n");
             addr_t vaddr = strtoll(arg1, NULL, 0);
             size_t size = atoi(arg2);
-            if (size > 0 || size < 64) // size limited to 64 bytes
+            if (size > 0 && size < 64) // size limited to 64 bytes
             {
                 unsigned char buffer[0];
                 if (memory_read(proc, vaddr, buffer, size) != 0)
