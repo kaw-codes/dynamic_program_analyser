@@ -64,6 +64,7 @@ void print_cmd_help()
     printf("  regread,  rr, [reg]\n");
     printf("  regwrite, rw, [reg]   [val]\n");
     printf("  memread,  mr, [vaddr] [size]\n");
+    printf("  memwrite, mr, [vaddr] [size]  [val]\n");
     printf("  exit,     e\n");
 }
 
@@ -93,6 +94,9 @@ int convert_str_into_id(char *cmd)
     if (strcmp(cmd, "memread") == 0 ||
         strcmp(cmd, "mr") == 0)
         return MEM_READ;
+    if (strcmp(cmd, "memwrite") ==0 ||
+        strcmp(cmd, "mw") == 0)
+        return MEM_WRITE;
     return ERROR;
 }
 
@@ -158,6 +162,7 @@ int main(int argc, char **argv)
         char *cmd = strtok(input, " ");
         char *arg1 = strtok(NULL, " ");
         char *arg2 = strtok(NULL, " ");
+        char *arg3 = strtok(NULL, " ");
         int cmd_id = -1;
         if (cmd) cmd_id = convert_str_into_id(cmd);
 
@@ -337,7 +342,43 @@ int main(int argc, char **argv)
                 }
                 printf("\n");
             }
-            
+            break;
+
+        /* memory_write */
+        case MEM_WRITE:
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            if (!arg1 || !arg2 || !arg3)
+            {
+                printf("error: 3 arguments are required\n");
+                print_cmd_help();
+                break;
+            }
+            printf("writing memory...\n");
+            addr_t vaddr = strtoll(arg1, NULL, 0);
+            size_t size = atoi(arg2);
+            unsigned long long data = strtoll(arg3, NULL, 0);
+            if (size >= 1 && size <= 8)
+            {
+                unsigned char* buffer = NULL;
+                buffer = malloc(size);
+                if (!buffer) 
+                    break;
+                for (int i = (size - 1); i >= 0; i--)
+                {
+                    buffer[i] = data & 0xff;
+                    data >>= 8;
+                }
+                if (memory_write(proc, vaddr, buffer, size) != 0)
+                {
+                    printf("error: issue with memory_write\n");
+                    return EXIT_FAILURE;
+                }
+                free(buffer);
+            }
             break;
 
         /* exit */
