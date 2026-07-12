@@ -104,3 +104,8 @@ int register_write(process_t *proc, const char *reg, reg_t new_val);
  * and write bytes read in buffer
  */
 int memory_read(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);
+
+/**
+ * to write proc's memory
+ */
+int memory_write(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);
