@@ -316,6 +316,7 @@ int main(int argc, char **argv)
 
         /* memory_read */
         case MEM_READ:
+        {
             if (!proc)
             {
                 printf("error: no proc attached\n");
@@ -349,9 +350,11 @@ int main(int argc, char **argv)
                 printf("\n");
             }
             break;
+        }
 
         /* memory_write */
         case MEM_WRITE:
+        {
             if (!proc)
             {
                 printf("error: no proc attached\n");
@@ -388,6 +391,7 @@ int main(int argc, char **argv)
                 free(buffer);
             }
             break;
+        }
 
         /* exit */
         case EXIT:
