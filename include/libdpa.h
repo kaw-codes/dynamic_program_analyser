@@ -33,6 +33,7 @@
 #define GS  27
 
 typedef unsigned long long int reg_t;
+typedef unsigned long addr_t;
 
 typedef enum 
 {
@@ -97,3 +98,15 @@ int register_read(process_t *proc, const char *reg, reg_t *val_reg);
  * to write "new_val" in the specified "reg"
  */
 int register_write(process_t *proc, const char *reg, reg_t new_val);
+
+/**
+ * to read proc's memory from vaddr to (vaddr + size)
+ * and write bytes read in buffer
+ */
+int memory_read(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);
+
+/**
+ * to write the content of buffer in proc's memory from vaddr to (vaddr + size)
+ * this function can only write a maximum of 8 bytes at a time
+ */
+int memory_write(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);

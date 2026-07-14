@@ -63,6 +63,8 @@ void print_cmd_help()
     printf("  detach,   d\n");
     printf("  regread,  rr, [reg]\n");
     printf("  regwrite, rw, [reg]   [val]\n");
+    printf("  memread,  mr, [vaddr] [size]\n");
+    printf("  memwrite, mr, [vaddr] [size]  [val]\n");
     printf("  exit,     e\n");
 }
 
@@ -89,6 +91,12 @@ int convert_str_into_id(char *cmd)
     if (strcmp(cmd, "regwrite") == 0 ||
         strcmp(cmd, "rw") == 0)
         return REG_WRITE;
+    if (strcmp(cmd, "memread") == 0 ||
+        strcmp(cmd, "mr") == 0)
+        return MEM_READ;
+    if (strcmp(cmd, "memwrite") ==0 ||
+        strcmp(cmd, "mw") == 0)
+        return MEM_WRITE;
     return ERROR;
 }
 
@@ -154,6 +162,7 @@ int main(int argc, char **argv)
         char *cmd = strtok(input, " ");
         char *arg1 = strtok(NULL, " ");
         char *arg2 = strtok(NULL, " ");
+        char *arg3 = strtok(NULL, " ");
         int cmd_id = -1;
         if (cmd) cmd_id = convert_str_into_id(cmd);
 
@@ -267,6 +276,7 @@ int main(int argc, char **argv)
                 break;
             }
             printf("reading register...\n");
+            // get args
             char *reg_to_read = arg1;
             reg_t val_reg = 0;
             if (register_read(proc, reg_to_read, &val_reg) != 0)
@@ -291,8 +301,10 @@ int main(int argc, char **argv)
                 break;
             }
             printf("writing register...\n");
+            // get args
             char *reg_to_write = arg1;
             reg_t new_val = strtoll(arg2, NULL, 0);
+            // function call
             if (register_write(proc, reg_to_write, new_val) != 0)
             {
                 printf("error: issue with register_write\n");
@@ -300,6 +312,85 @@ int main(int argc, char **argv)
             }
             printf("%s=0x%llx\n", arg1, new_val);
             break;
+
+        /* memory_read */
+        case MEM_READ:
+        {
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            if (!arg1 || !arg2)
+            {
+                printf("error: 2 arguments are required\n");
+                print_cmd_help();
+                break;
+            }
+            printf("reading memory...\n");
+            // get args
+            addr_t vaddr = strtoll(arg1, NULL, 0);
+            size_t size = atoi(arg2);
+            if (size > 0 && size < 64) // size limited to 64 bytes
+            {
+                unsigned char buffer[0];
+                // function call
+                if (memory_read(proc, vaddr, buffer, size) != 0)
+                {
+                    printf("error: issue with memory_read\n");
+                    return EXIT_FAILURE;
+                }
+                // print read bytes
+                printf("0x%lx: ", vaddr);
+                for (int i = 0; i < size; i++)
+                {
+                    printf("%x ", buffer[i]);
+                }
+                printf("\n");
+            }
+            break;
+        }
+
+        /* memory_write */
+        case MEM_WRITE:
+        {
+            if (!proc)
+            {
+                printf("error: no proc attached\n");
+                break;
+            }
+            if (!arg1 || !arg2 || !arg3)
+            {
+                printf("error: 3 arguments are required\n");
+                print_cmd_help();
+                break;
+            }
+            printf("writing memory...\n");
+            // get args
+            addr_t vaddr = strtoll(arg1, NULL, 0);
+            size_t size = atoi(arg2);
+            unsigned long long data = strtoll(arg3, NULL, 0);
+            if (size >= 1 && size <= 8)
+            {
+                unsigned char* buffer = NULL;
+                buffer = malloc(size);
+                if (!buffer) 
+                    break;
+                for (int i = (size - 1); i >= 0; i--)
+                {
+                    buffer[i] = data & 0xff;
+                    data >>= 8;
+                }
+                // function call
+                if (memory_write(proc, vaddr, buffer, size) != 0)
+                {
+                    printf("error: issue with memory_write\n");
+                    return EXIT_FAILURE;
+                }
+                free(buffer);
+            }
+            break;
+        }
 
         /* exit */
         case EXIT:
