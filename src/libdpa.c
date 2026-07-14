@@ -416,3 +416,26 @@ int memory_read(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t siz
     // end
     return EXIT_SUCCESS;
 }
+
+int memory_write(process_t *proc, addr_t vaddr, unsigned char* buffer, size_t size)
+{
+    // checks
+    if (!proc || !buffer)
+    {
+        return EXIT_FAILURE;
+    }
+    if (size <= 0 || size > 8)
+    {
+        return EXIT_FAILURE;
+    }
+
+    // writing
+    char path[32];
+    snprintf(path, sizeof(path), "/proc/%d/mem", proc->pid);
+    int fd = open(path, O_RDONLY);
+    pwrite(fd, buffer, size, (off_t)vaddr);
+    close(fd);
+
+    // end
+    return EXIT_SUCCESS;
+}
