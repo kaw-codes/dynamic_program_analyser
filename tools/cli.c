@@ -277,7 +277,7 @@ int main(int argc, char **argv)
             }
             printf("reading register...\n");
             // get args
-            char *reg_to_read = arg1;
+            char *reg_to_read = arg1; // FIXME unused variable
             reg_t val_reg = 0;
             // function call
             if (register_read(proc, arg1, &val_reg) != 0)
