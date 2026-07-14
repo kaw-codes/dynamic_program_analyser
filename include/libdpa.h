@@ -106,6 +106,7 @@ int register_write(process_t *proc, const char *reg, reg_t new_val);
 int memory_read(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);
 
 /**
- * to write proc's memory
+ * to write the content of buffer in proc's memory from vaddr to (vaddr + size)
+ * this function can only write a maximum of 8 bytes at a time
  */
 int memory_write(process_t *proc, addr_t vaddr, unsigned char *buffer, size_t size);
