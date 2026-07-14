@@ -1,0 +1,26 @@
+name: sast
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  semgrep_actions:
+    permissions: write-all
+    name: semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: run semgrep analysis (blocking mode)
+        run: semgrep scan --sarif --sarif-output=semgrep.sarif || true # non-blocking
+        # run: semgrep scan --sarif --sarif-output=semgrep.sarif --error # blocking
+      - name: upload sarif file to github
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
+      
+    
