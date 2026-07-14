@@ -432,9 +432,11 @@ int memory_write(process_t *proc, addr_t vaddr, unsigned char* buffer, size_t si
     // writing
     char path[32];
     snprintf(path, sizeof(path), "/proc/%d/mem", proc->pid);
-    int fd = open(path, O_RDONLY);
+    int fd = open(path, O_RDWR);
     pwrite(fd, buffer, size, (off_t)vaddr);
     close(fd);
+    
+    return EXIT_SUCCESS;
 
     // end
     return EXIT_SUCCESS;
